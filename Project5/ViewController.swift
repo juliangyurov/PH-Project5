@@ -11,6 +11,7 @@ class ViewController: UITableViewController {
     var allWords = [String]()
     var usedWords = [String]()
 
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -48,7 +49,7 @@ class ViewController: UITableViewController {
         
         let submitAction = UIAlertAction(title: "Submit", style: .default) {
             [weak self, weak ac] action in
-            guard let answer = ac?.textFields?[0].text else { return }
+            guard !(ac?.textFields?[0].text?.isEmpty ?? true), let answer = ac?.textFields?[0].text else { return }
             self?.submit(answer)
         }
         
@@ -56,16 +57,32 @@ class ViewController: UITableViewController {
         present(ac, animated: true	)
     }
     func submit(_ answer: String){
+        var errorTitle: String
+        var errorMessage: String
         let lowerAnswer = answer.lowercased()
+        
         if isPossible(word: lowerAnswer){
             if isOriginal(word: lowerAnswer){
                 if isReal(word: lowerAnswer){
                     usedWords.insert(answer, at: 0)
                     let indexPath = IndexPath(row: 0, section: 0)
                     tableView.insertRows(at: [indexPath], with: .automatic)
+                    return
+                }else{
+                    errorTitle = "Word is not recognized"
+                    errorMessage = "You can't just make them up, you know!"
                 }
+            }else{
+                errorTitle = "Word already used"
+                errorMessage = "Be more original!"
             }
+        }else{
+            errorTitle = "Word is not possible"
+            errorMessage = "You can't spell that word from \(title!.lowercased())!"
         }
+        let ac = UIAlertController(title: errorTitle, message: errorMessage, preferredStyle: .alert)
+        ac.addAction(   UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
     }
     func isPossible(word: String) -> Bool {
         guard var tempWord = title?.lowercased() else { return false }
