@@ -101,6 +101,13 @@ class ViewController: UITableViewController {
         return !usedWords.contains(word)
     }
     func isReal(word: String) -> Bool {
+        if word.utf16.count < 3 { return false }
+        
+        guard var tempWord = title?.lowercased() else { return false }
+        let index = tempWord.index(tempWord.startIndex, offsetBy: word.utf16.count)
+        let startWord = tempWord[..<index]
+        if word == startWord  { return false }
+        
         let checker = UITextChecker()
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
