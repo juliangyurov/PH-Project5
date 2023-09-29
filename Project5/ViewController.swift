@@ -66,25 +66,42 @@ class ViewController: UITableViewController {
         if isPossible(word: lowerAnswer){
             if isOriginal(word: lowerAnswer){
                 if isReal(word: lowerAnswer){
-                    usedWords.insert(answer, at: 0)
-                    let indexPath = IndexPath(row: 0, section: 0)
-                    tableView.insertRows(at: [indexPath], with: .automatic)
-                    return
+                    if notStartingWith(word: lowerAnswer){
+                        if isLong(word: lowerAnswer){
+                            usedWords.insert(lowerAnswer, at: 0)
+                            let indexPath = IndexPath(row: 0, section: 0)
+                            tableView.insertRows(at: [indexPath], with: .automatic)
+                            return
+                        }else{
+                            errorTitle = "Word is shorter than 3 letters"
+                            errorMessage = "Use more letters!"
+                            showErrorMessage(errTitle: errorTitle, errMessage: errorMessage)
+                        }
+                    }else{
+                        errorTitle = "Word is starting"
+                        errorMessage = "Use another combination!"
+                        showErrorMessage(errTitle: errorTitle, errMessage: errorMessage)
+                    }
                 }else{
                     errorTitle = "Word is not recognized"
                     errorMessage = "You can't just make them up, you know!"
+                    showErrorMessage(errTitle: errorTitle, errMessage: errorMessage)
                 }
             }else{
                 errorTitle = "Word already used"
                 errorMessage = "Be more original!"
+                showErrorMessage(errTitle: errorTitle, errMessage: errorMessage)
             }
         }else{
             errorTitle = "Word is not possible"
             errorMessage = "You can't spell that word from \(title!.lowercased())!"
+            showErrorMessage(errTitle: errorTitle, errMessage: errorMessage)
         }
-        let ac = UIAlertController(title: errorTitle, message: errorMessage, preferredStyle: .alert)
-        ac.addAction(   UIAlertAction(title: "OK", style: .default))
-        present(ac, animated: true)
+        
+        
+        //        let ac = UIAlertController(title: errorTitle, message: errorMessage, preferredStyle: .alert)
+        //        ac.addAction(   UIAlertAction(title: "OK", style: .default))
+        //        present(ac, animated: true)
     }
     func isPossible(word: String) -> Bool {
         guard var tempWord = title?.lowercased() else { return false }
@@ -101,17 +118,32 @@ class ViewController: UITableViewController {
         return !usedWords.contains(word)
     }
     func isReal(word: String) -> Bool {
-        if word.utf16.count < 3 { return false }
+        //if word.utf16.count < 3 { return false }
         
-        guard var tempWord = title?.lowercased() else { return false }
-        let index = tempWord.index(tempWord.startIndex, offsetBy: word.utf16.count)
-        let startWord = tempWord[..<index]
-        if word == startWord  { return false }
+//        guard let tempWord = title?.lowercased() else { return false }
+//        let index = tempWord.index(tempWord.startIndex, offsetBy: word.utf16.count)
+//        let startWord = tempWord[..<index]
+//        if word == startWord  { return false }
         
         let checker = UITextChecker()
         let range = NSRange(location: 0, length: word.utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
         return misspelledRange.location == NSNotFound
+    }
+    func isLong(word: String) -> Bool {
+        if word.utf16.count < 3 { return false }
+        return true
+    }
+    func notStartingWith(word: String) -> Bool {
+        guard let tempWord = title?.lowercased() else { return false }
+        if tempWord.starts(with: word) { return false }
+        return true
+    }
+    
+    func showErrorMessage(errTitle: String, errMessage: String){
+        let ac = UIAlertController(title: errTitle, message: errMessage, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
     }
 }
 
