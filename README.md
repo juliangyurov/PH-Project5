@@ -15,3 +15,5 @@
 -Or else what?
 
 -Wrap up
+
+## [Download assets for this project from GitHub](https://github.com/twostraws/HackingWithSwift)
