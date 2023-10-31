@@ -59,6 +59,7 @@ class ViewController: UITableViewController {
         present(ac, animated: true	)
     }
     func submit(_ answer: String){
+        
         var errorTitle: String
         var errorMessage: String
         let lowerAnswer = answer.lowercased()
